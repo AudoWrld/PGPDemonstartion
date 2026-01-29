@@ -183,13 +183,27 @@ def main():
 
     # Interactive mode
     print("\nInteractive Mode - Try sending your own messages!")
-    print("(Type 'quit' to exit)\n")
+    print("(Type 'quit' to exit)")
+    print("You can choose the recipient for each message.\n")
 
+    devices = {"alice": alice, "bob": bob, "charlie": charlie}
     current_sender = alice
-    current_receiver = bob
 
     while True:
         sender_name = current_sender.name
+
+        # Choose recipient
+        while True:
+            recipient_choice = input(f"{sender_name}, choose recipient (alice/bob/charlie): ").lower().strip()
+            if recipient_choice in devices:
+                if devices[recipient_choice] == current_sender:
+                    print("You cannot send a message to yourself. Choose another recipient.")
+                    continue
+                current_receiver = devices[recipient_choice]
+                break
+            else:
+                print("Invalid choice. Please choose alice, bob, or charlie.")
+
         receiver_name = current_receiver.name
 
         user_message = input(f"{sender_name} -> {receiver_name}: ")
