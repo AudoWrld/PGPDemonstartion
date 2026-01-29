@@ -121,9 +121,10 @@ def main():
     print("PGP Encryption Demo - Secure Messaging Between Two Devices")
     print_separator()
 
-    # Create two devices (Alice and Bob)
+    # Create three devices (Alice, Bob, and Charlie as potential interceptor)
     alice = Device("Alice")
     bob = Device("Bob")
+    charlie = Device("Charlie")
 
     print_separator()
     print("Key Exchange Phase")
@@ -133,9 +134,11 @@ def main():
     # Exchange public keys (in real scenario, this would happen through key servers)
     alice_public_key_pem = alice.get_public_key_pem()
     bob_public_key_pem = bob.get_public_key_pem()
+    charlie_public_key_pem = charlie.get_public_key_pem()
 
     print(f"Alice's Public Key (first 100 chars):\n{alice_public_key_pem[:100]}...\n")
     print(f"Bob's Public Key (first 100 chars):\n{bob_public_key_pem[:100]}...\n")
+    print(f"Charlie's Public Key (first 100 chars):\n{charlie_public_key_pem[:100]}...\n")
 
     # Simulate messaging
     print_separator()
@@ -202,13 +205,21 @@ def main():
         encrypted = current_sender.encrypt_message(
             user_message, current_receiver.public_key
         )
-        
+
         # Show encrypted data
         print(f"\nEncrypted Data (truncated):")
         print(f"   Sender: {encrypted['sender']}")
         print(f"   Encrypted Message: {encrypted['encrypted_message'][:80]}...")
         print(f"   Signature: {encrypted['signature'][:80]}...")
         print(f"   Timestamp: {encrypted['timestamp']}")
+
+        # Simulate Charlie attempting to intercept
+        print(f"\n[INTERCEPTION ATTEMPT] Charlie tries to intercept the message...")
+        try:
+            intercepted = charlie.decrypt_message(encrypted, current_sender.public_key)
+            print(f"[INTERCEPTION SUCCESS] Charlie intercepted: '{intercepted}'")
+        except Exception as e:
+            print(f"[INTERCEPTION FAILED] Charlie: Cannot decrypt - does not have {receiver_name}'s private key. Error: {str(e)[:100]}...")
 
         # Decrypt and display
         decrypted = current_receiver.decrypt_message(
